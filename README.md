@@ -1,4 +1,4 @@
-![https://travis-ci.org/sdelrio/hs110-prometheus-exporter](https://travis-ci.org/sdelrio/hs110-prometheus-exporter.svg?branch=master)
+![https://travis-ci.org/segator/electricity_companies_prometheus_exporter](https://travis-ci.org/segator/electricity_companies_prometheus_exporter.svg?branch=master)
 
 # Electricity company price prometheus exporter
 
