@@ -1,0 +1,44 @@
+sudo: required
+services:
+- docker
+before_install:
+    - sudo apt-get update
+    - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+    - docker --version # for verification
+language: generic
+jobs:
+  include:
+    - stage: build docker images
+      env:
+        - TAG=$(grep "ENV VERSION" Dockerfile | awk 'NF>1{print $NF}')
+        - BASE_X86=jfloff/alpine-python
+        - BASE_ARM=resin/raspberry-pi-alpine-python
+      script:
+      - echo $TAG
+      # x86 build
+      - docker build --build-arg BASE_IMAGE=$BASE_X86 -t segator/electricity-company-exporter -f Dockerfile .
+      # prepare qemu for arm build
+      - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      # build arm image
+      - docker build --build-arg BASE_IMAGE=$BASE_ARM -t segator/electricity-company-exporter-arm -f Dockerfile .
+      - >
+        if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+          docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+          TAG=$(grep "ENV VERSION" Dockerfile | awk 'NF>1{print $NF}')
+          docker tag segator/electricity-company-exporter segator/electricity-company-exporter:$TAG
+          docker push segator/electricity-company-exporter:$TAG
+          docker push segator/electricity-company-exporter
+          docker tag segator/electricity-company-exporter-arm segator/electricity-company-exporter-arm:$TAG
+          docker push segator/electricity-company-exporter-arm:$TAG
+          docker push segator/electricity-company-exporter-arm
+        fi
+
+    - stage: test
+      script:
+      # test x86 image
+      - docker run --rm -e "SHOWHELP=true" -ti segator/electricity-company-exporter
+      # prepare qemu for arm build
+      - docker run --rm --privileged multiarch/qemu-user-static:register --reset
+      # test arm image
+      - docker run --rm -e "SHOWHELP=true" -ti segator/electricity-company-exporter-arm
+
