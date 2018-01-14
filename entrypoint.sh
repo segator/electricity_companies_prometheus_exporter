@@ -11,5 +11,5 @@ if [ -z "$LISTENPORT" ]; then
     LISTENPORT=8110
 fi
 
-python /usr/local/bin/electricity_exporter.py -t $HS110IP -f $FREQUENCY -p $LISTENPORT
+python /usr/local/bin/electricity_exporter.py -p $LISTENPORT
 
