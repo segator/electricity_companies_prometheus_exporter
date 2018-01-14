@@ -32,7 +32,8 @@ def get_endesa_price():
     parsed = r.text[pos:]
     end = parsed.find("\"")
     parsed = parsed[:end]
-    return  parsed
+    parsed = parsed.replace(",",".")
+    return  float(parsed)
 
 
 
