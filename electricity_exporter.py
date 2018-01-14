@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-#!/usr/bin/env python
-
 from prometheus_client import start_http_server, Gauge
 from time import gmtime, strftime
 import time
@@ -26,7 +24,7 @@ ELECTRICITY_PRICE_ENDESA   = Gauge('electricity_price_endesa_kwh_eur_price', 'en
 ELECTRICITY_PRICE_ENDESA.set_function(lambda: get_endesa_price() )
 
 def get_endesa_price():
-    nowDate = strftime("%Y-%m-%d", gmtime()) 
+    nowDate = strftime("%Y-%m-%d", gmtime())
     data={u'currentDate':nowDate,'currentRate':'GEN'}
     headers={u"Content-Type":"application/x-www-form-urlencoded","x-requested-with":"XMLHttpRequest"}
     r = requests.post("https://www.endesaclientes.com/sites/Satellite/?pagename=SiteEntry_IB_ES/LandingPrice/GetPrices",headers=headers,data=data)
