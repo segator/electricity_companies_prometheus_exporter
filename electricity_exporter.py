@@ -24,16 +24,15 @@ ELECTRICITY_PRICE_ENDESA   = Gauge('electricity_price_endesa_kwh_eur_price', 'en
 ELECTRICITY_PRICE_ENDESA.set_function(lambda: get_endesa_price() )
 
 def get_endesa_price():
-    nowDate = strftime("%Y-%m-%d", gmtime())
-    data={u'currentDate':nowDate,'currentRate':'GEN'}
-    headers={u"Content-Type":"application/x-www-form-urlencoded","x-requested-with":"XMLHttpRequest"}
-    r = requests.post("https://www.endesaclientes.com/sites/Satellite/?pagename=SiteEntry_IB_ES/LandingPrice/GetPrices",headers=headers,data=data)
-    pos = r.text.find("var actualPrice = ")+19
-    parsed = r.text[pos:]
-    end = parsed.find("\"")
-    parsed = parsed[:end]
-    parsed = parsed.replace(",",".")
-    return  float(parsed)
+    r = requests.get("https://tarifaluzhora.es/")
+    html = r.text.splitlines()
+    i = 0
+    while i < len(html):
+        if "gauge" in html[i]:
+            for x in range(0, 4):
+                if "€/kWh" in html[i+x]:
+                    return float(html[i+x-1].split(">")[1])
+        i+=1
 
 
 
